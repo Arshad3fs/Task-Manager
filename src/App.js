@@ -1,24 +1,48 @@
-import logo from './logo.svg';
+import { ThemeProvider } from '@material-ui/core';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from "react-router-dom";
 import './App.css';
+import MyReportessTasks from './components/my-reportees-tasks/MyReporteesTasks';
+import MyTasks from './components/my-tasks/MyTasks';
+import MyReportsByStatus from './components/reports/MyReportsByStatus';
+import Signin from './components/signin/Signin';
+import Signup from './components/signup/Signup';
+import Welcome from './components/welcome/Welcome';
+import customTheme from './theme/theme';
+import { ROUTES } from './utils/AppConstants';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={customTheme}>
+      <Router>
+        <Switch>
+            <Route path={ROUTES.signIn}>
+              <Signin />
+            </Route>
+            <Route path={ROUTES.singUp}>
+              <Signup />
+            </Route> 
+            <Route path={ROUTES.welcome}>
+              <Welcome />
+            </Route>
+            <Route path={ROUTES.myTasks}>
+              <MyTasks />
+            </Route>
+            <Route path={ROUTES.myReporteesTasks}>
+              <MyReportessTasks />
+            </Route>
+            <Route path={ROUTES.myReports}>
+              <MyReportsByStatus />
+            </Route>
+            <Route path="/">
+              <Signup/>
+            </Route>
+          </Switch>
+        </Router>      
+    </ThemeProvider>        
   );
 }
 

@@ -9,7 +9,9 @@ const useStyles = makeStyles((theme) =>
       reportsContainer: {
         overflowY: "auto",
         display: "flex",
-        flexWrap: "wrap"
+        flexWrap: "wrap",
+        width: "100%",
+        padding: "10px"
       },
         container: {
             minHeight: "100vh",

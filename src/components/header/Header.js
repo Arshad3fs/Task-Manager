@@ -1,10 +1,13 @@
 
+import React from 'react';
 import { createStyles, makeStyles, Tooltip } from "@material-ui/core";
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
 import { useHistory } from "react-router-dom";
 import logo from '../../images/taskManagerLogo.png';
 import { ROUTES } from "../../utils/AppConstants";
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -65,7 +68,22 @@ function Header(){
     const history = useHistory();
 
     const gotoWelcomePage = () => history.push(ROUTES.welcome);
-    
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleLogout = () => {
+        handleClose();
+        
+        history.push(ROUTES.signIn);
+    }
     
     return (
         <div className={classes.container}>
@@ -74,11 +92,28 @@ function Header(){
             </div>
             <div className={classes.rightContainer}>
             <BootstrapTooltip title="Manage Users">
-                <SupervisedUserCircleIcon style={{marginRight: "10px"}} className={classes.iconStyle}></SupervisedUserCircleIcon>
+                <SupervisedUserCircleIcon style={{marginRight: "10px"}} 
+                                          className={classes.iconStyle} 
+                                          >                                              
+                </SupervisedUserCircleIcon>
             </BootstrapTooltip>
             <BootstrapTooltip title="My Account">
-                <AccountCircleIcon className={classes.iconStyle}></AccountCircleIcon>
+                <AccountCircleIcon className={classes.iconStyle} 
+                                   aria-controls="simple-menu" 
+                                   aria-haspopup="true"
+                                   onClick={handleClick}>                                       
+                </AccountCircleIcon>
             </BootstrapTooltip>    
+            <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                style={{top: 35}}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}>
+                <MenuItem onClick={handleClose}>My Profile</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
             </div>
         </div>
     );

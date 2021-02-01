@@ -15,6 +15,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import EnhancedTableHead from "../common/EnhancedTableHead";
 import clsx from "clsx";
 import EditIcon from '@material-ui/icons/Edit';
+import ConfirmationDialog from "../confirmation-dialog/ConfirmationDialog"
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -121,6 +122,7 @@ function MyTasks (){
     const classes = useStyles();
     const [showDialog, setShowDialog] = React.useState(false);
     const [taskToEdit, setTaskToEdit] = React.useState(null);
+    const [showConfirmation, setShowConfirmation] = React.useState(false);
 
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('title');
@@ -185,12 +187,15 @@ function MyTasks (){
         setTaskToEdit(null);
     }
 
+    const handleConfirmation = ()=> setShowConfirmation(!showConfirmation);
+
     const deleteSelected = () => {
       let tasks = JSON.parse(localStorage.getItem(TASKS));
       tasks = tasks ? tasks : [];
       tasks = tasks.filter (task => !selected.includes(task.title));      
       localStorage.setItem(TASKS, JSON.stringify(tasks));
       setRows(tasks);
+      setShowConfirmation(!showConfirmation);
     }
 
     const filterTasks = (event) => {
@@ -211,6 +216,12 @@ function MyTasks (){
     return (
         <div className={classes.container}>
                 <Header></Header>
+                {showConfirmation ? 
+                    <ConfirmationDialog header={'Confirmation'} 
+                                        contentText={'Selected tasks will be deleted. Are you sure you want to proceed?'} 
+                                        handleActionButton={deleteSelected} 
+                                        handleClose={handleConfirmation}
+                                        showDialog={showConfirmation} />: ""}
                 <div className={classes.containerBody}>
                     {showDialog ? <CreateTask showDialog={showDialog} setShowDialog={handleCreateNewTask} taskToEdit={taskToEdit}/> : ""}
                     <div className={classes.taskActionContainer}>
@@ -221,7 +232,7 @@ function MyTasks (){
                                     style={{width: 500}} />
                         </div>
                         <button className={clsx(classes.filledButton, classes.secondaryButton)}
-                                onClick={deleteSelected}>Delete Selected Tasks</button>
+                                onClick={handleConfirmation}>Delete Selected Tasks</button>
                     </div>
                     <div className={classes.root}>
                       <Paper className={classes.paper}>

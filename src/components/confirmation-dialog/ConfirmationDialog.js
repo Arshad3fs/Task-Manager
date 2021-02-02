@@ -18,7 +18,7 @@ const  { header, contentText, handleActionButton, handleClose, showDialog } = pr
           <div style={{ fontSize: 20, fontWeight: 600, color: "#000000b8", marginBottom: 35 }}>  
               {header}
           </div>
-          <DialogContentText>
+          <DialogContentText style={{color: "rgb(0 0 0 / 72%)"}}>
             {contentText}
           </DialogContentText>
         </DialogContent>

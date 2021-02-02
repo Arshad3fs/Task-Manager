@@ -13,7 +13,7 @@ import { ROUTES } from "../utils/AppConstants";
         },
         {
             title: "My Reports",
-            desc: "Track your reports.",
+            desc: "Track your progress.",
             path: ROUTES.myReports
         }
     ];

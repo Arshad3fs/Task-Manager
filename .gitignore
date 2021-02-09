@@ -1,8 +1,11 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+/task-manager-ui/node_modules
 /graphql-server/node_modules
+/task-manager-ui/.pnp
+/task-manager-ui/.pnp.js
+
 /graphql-server/.pnp
 /graphql-server/.pnp.js
 
@@ -10,7 +13,7 @@
 /coverage
 
 # production
-/build
+/task-manager-ui/build
 /graphql-server/build
 
 # misc

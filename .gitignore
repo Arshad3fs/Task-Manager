@@ -2,14 +2,16 @@
 
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
+/graphql-server/node_modules
+/graphql-server/.pnp
+/graphql-server/.pnp.js
 
 # testing
 /coverage
 
 # production
 /build
+/graphql-server/build
 
 # misc
 .DS_Store

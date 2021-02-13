@@ -1,3 +1,22 @@
 type Query {
-  person: String
+  getUserDetails(email: String!): User
+  signInUser(email: String!, password: String!): Boolean
+}
+
+type Mutation {
+  registerUser(firstName: String!, lastName: String, email: String!, password: String!, isManager: Boolean): MutationResponse!
+}
+
+type MutationResponse {
+  status: Boolean!
+  message: String!
+}
+
+type User {
+  firstName: String!
+  lastName: String
+  email: String!
+  isManager: Boolean
+  registeredOn: String!
+  lastLogin: String
 }

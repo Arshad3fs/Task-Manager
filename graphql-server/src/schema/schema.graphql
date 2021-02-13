@@ -1,10 +1,14 @@
 type Query {
   getUserDetails(email: String!): User
   signInUser(email: String!, password: String!): Boolean
+  getTaskDetails(title: String!): [Task]
 }
 
 type Mutation {
   registerUser(firstName: String!, lastName: String, email: String!, password: String!, isManager: Boolean): MutationResponse!
+  createTask(task: TaskInput): MutationResponse!
+  updateTask(task: TaskUpdateInput): MutationResponse!
+  deleteTask(id: String!): MutationResponse!
 }
 
 type MutationResponse {
@@ -13,10 +17,43 @@ type MutationResponse {
 }
 
 type User {
+  id: ID!
   firstName: String!
   lastName: String
   email: String!
   isManager: Boolean
   registeredOn: String!
   lastLogin: String
+}
+
+type Task {
+  id: ID!
+  title: String!
+  category: String!  
+  startDateTime: String, 
+  endDateTime: String!
+  email: String!
+  desc: String
+  status: String!
+}
+
+input TaskInput {
+  title: String!
+  category: String!  
+  startDateTime: String, 
+  endDateTime: String!
+  email: String!
+  desc: String
+  status: String!
+}
+
+input TaskUpdateInput {
+  id: String!
+  title: String!
+  category: String!  
+  startDateTime: String, 
+  endDateTime: String!
+  email: String!
+  desc: String
+  status: String!
 }

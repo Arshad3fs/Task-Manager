@@ -11,8 +11,8 @@ const pool = new pg.Pool({
 const executeQuery = async (query, params) => {    
     
     let resp;    
-    try {
-        const client = await pool.connect()    
+    const client = await pool.connect();
+    try {            
         if( params && params.length > 0 ){
             resp = await client.query(query, params);
         } else {

@@ -3,7 +3,9 @@ import React from 'react';
 import { Checkbox, FormControl, FormControlLabel, TextField } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Link, useHistory } from 'react-router-dom';
-import { USER_DETAILS } from '../../utils/AppConstants';
+import { gql, useLazyQuery } from '@apollo/client';
+import { ROUTES } from "../../utils/AppConstants"
+import { SIGNIN_QUERY } from '../../utils/GraphqlQueries';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -69,7 +71,11 @@ function Signin(){
     const classes = useStyles();
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
+    const [signinUser, { called, loading, data }] = useLazyQuery(SIGNIN_QUERY, {variables: {email, password}});
     const history = useHistory();
+
+    if(data && data.signInUser)
+        history.push(ROUTES.welcome); 
     
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -78,10 +84,8 @@ function Signin(){
         setPassword(event.target.value);
     };
     const handleSignIn = (event) => {
-        const registeredUsers = JSON.parse(localStorage.getItem(USER_DETAILS));
-        if(registeredUsers.some( user => user.email === email && user.password === password))
-            history.push("welcome");
-        return;
+        event.preventDefault(false);
+        signinUser();               
     }
 
     return <div className={classes.container}>

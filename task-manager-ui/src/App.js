@@ -1,3 +1,4 @@
+import { ApolloProvider } from '@apollo/client';
 import { ThemeProvider } from '@material-ui/core';
 import {
   BrowserRouter as Router,
@@ -5,6 +6,7 @@ import {
   Route
 } from "react-router-dom";
 import './App.css';
+import client from './client/client';
 import MyReportessTasks from './components/my-reportees-tasks/MyReporteesTasks';
 import MyTasks from './components/my-tasks/MyTasks';
 import MyReportsByStatus from './components/reports/MyReportsByStatus';
@@ -15,10 +17,12 @@ import customTheme from './theme/theme';
 import { ROUTES } from './utils/AppConstants';
 
 function App() {
+
   return (
     <ThemeProvider theme={customTheme}>
-      <Router>
-        <Switch>
+      <ApolloProvider client={client}>
+        <Router>
+          <Switch>
             <Route path={ROUTES.signIn}>
               <Signin />
             </Route>
@@ -41,7 +45,8 @@ function App() {
               <Signup/>
             </Route>
           </Switch>
-        </Router>      
+        </Router>
+      </ApolloProvider>     
     </ThemeProvider>        
   );
 }

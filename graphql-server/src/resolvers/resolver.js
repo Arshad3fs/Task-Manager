@@ -60,7 +60,7 @@ export default {
         return response;   
       }
       
-      if( isUserRegisterd(args.email) ) {
+      if( await isUserRegisterd(args.email) ) {
         response.message = `User is already registered with ${args.email}`;
         return response;
       }
@@ -70,8 +70,7 @@ export default {
       params.push( new Date() );
       await executeQuery( INSERT_USER, params ).then( r => {
         response.status = true;
-        response.message = "User created successfully";
-        console.log(r);
+        response.message = "User created successfully";        
       }).catch(e => console.log(e));
       return response;
     },

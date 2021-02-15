@@ -2,7 +2,9 @@ import React from 'react';
 import { Checkbox, FormControl, FormControlLabel, TextField } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Link, useHistory } from 'react-router-dom';
-import { USER_DETAILS } from '../../utils/AppConstants';
+import { ROUTES, USER_DETAILS } from '../../utils/AppConstants';
+import { useMutation } from '@apollo/client';
+import { SIGNUP_QUERY } from '../../utils/GraphqlQueries';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -64,15 +66,19 @@ const useStyles = makeStyles((theme) =>
 );
 
 function Signup(){
-    
+        
     const classes = useStyles();
     const [firstName, setFirstName] = React.useState('');
     const [lastName, setLastName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [confirmPassword, setConfirmPassword] = React.useState('');
+    const [ registerUser, { loading, data } ] = useMutation(SIGNUP_QUERY, {variables: {firstName, lastName, email, password}});
     const history = useHistory();
-    
+
+    if( data && data.registerUser.status )
+        history.push(ROUTES.welcome);
+ 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
     };
@@ -89,11 +95,8 @@ function Signup(){
         setLastName(event.target.value);
     }
     const handleSignUp = (event) => {
-        let users = JSON.parse(localStorage.getItem(USER_DETAILS));
-        users = users ? users : [];
-        users.push({firstName, lastName, email, password});        
-        localStorage.setItem(USER_DETAILS, JSON.stringify(users));
-        history.push("welcome");
+        event.preventDefault(false);
+        registerUser();
     }
 
     return <div className={classes.container}>

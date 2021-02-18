@@ -2,9 +2,9 @@ import React from 'react';
 import { Checkbox, FormControl, FormControlLabel, TextField } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Link, useHistory } from 'react-router-dom';
-import { ROUTES, USER_DETAILS } from '../../utils/AppConstants';
+import { ROUTES } from '../../utils/AppConstants';
 import { useMutation } from '@apollo/client';
-import { SIGNUP_QUERY } from '../../utils/GraphqlQueries';
+import { SIGNUP_MUTATION } from '../../utils/GraphqlQueries';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -73,7 +73,7 @@ function Signup(){
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [confirmPassword, setConfirmPassword] = React.useState('');
-    const [ registerUser, { loading, data } ] = useMutation(SIGNUP_QUERY, {variables: {firstName, lastName, email, password}});
+    const [ registerUser, { data } ] = useMutation(SIGNUP_MUTATION, {variables: {firstName, lastName, email, password}});
     const history = useHistory();
 
     if( data && data.registerUser.status )

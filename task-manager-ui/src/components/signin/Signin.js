@@ -3,7 +3,7 @@ import React from 'react';
 import { Checkbox, FormControl, FormControlLabel, TextField } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Link, useHistory } from 'react-router-dom';
-import { gql, useLazyQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { ROUTES } from "../../utils/AppConstants"
 import { SIGNIN_QUERY } from '../../utils/GraphqlQueries';
 
@@ -71,7 +71,7 @@ function Signin(){
     const classes = useStyles();
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
-    const [signinUser, { called, loading, data }] = useLazyQuery(SIGNIN_QUERY, {variables: {email, password}});
+    const [signinUser, { data }] = useLazyQuery(SIGNIN_QUERY, {variables: {email, password}});
     const history = useHistory();
 
     if(data && data.signInUser)

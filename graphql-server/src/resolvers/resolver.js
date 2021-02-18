@@ -1,5 +1,5 @@
 import { executeQuery } from '../db-client/client.js'
-import { INSERT_USER, SELECT_USER_BY_EMAIL, SELECT_USER_ID_BY_EMAIL_AND_PASSWORD, SELECT_USER_ID_BY_EMAIL, INSERT_TASK, SELECT_TASK_BY_TITLE, DELETE_TASK_BY_ID, UPDATE_TASK } from '../utils/constants/Queries.js';
+import { INSERT_USER, SELECT_USER_BY_EMAIL, SELECT_USER_ID_BY_EMAIL_AND_PASSWORD, SELECT_USER_ID_BY_EMAIL, INSERT_TASK, SELECT_TASK_BY_TITLE, DELETE_TASK_BY_ID, UPDATE_TASK, SELECT_TASKS_BY_USER_ID } from '../utils/constants/Queries.js';
 import { formatParams, isValidTask } from '../utils/task/utils.js';
 
 export default {
@@ -50,6 +50,29 @@ export default {
       isSignInSuccessfull = r.rowCount > 0;
     }).catch(e => console.log(e))
      return isSignInSuccessfull; 
+  },
+  getMyTasks: async (parent, args) => {    
+    const response = [];
+    if( !args.email ){
+      return response;
+    }
+    const userId = await getUserId(args.email)
+    await executeQuery(SELECT_TASKS_BY_USER_ID, [userId]).then( r => {
+      if( r.rowCount > 0){
+        r.rows.forEach( row => {
+          response.push({
+            id: row.taskid,
+            title: row.title,
+            category: row.category,
+            startDateTime: row.startdatetime,
+            endDateTime: row.enddatetime,          
+            desc: row.description,
+            status: row.status
+          });
+        })
+      }  
+    }).catch( e => console.log(e));
+    return response;
   }
 },
   Mutation: {

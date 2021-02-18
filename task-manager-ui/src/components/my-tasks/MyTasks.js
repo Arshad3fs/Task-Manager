@@ -2,7 +2,7 @@ import { createStyles, TextField } from "@material-ui/core";
 import CreateTask from "../create-task/CreateTask";
 import Header from "../header/Header";
 import { TASKS } from "../../utils/AppConstants";
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,6 +16,8 @@ import EnhancedTableHead from "../common/EnhancedTableHead";
 import clsx from "clsx";
 import EditIcon from '@material-ui/icons/Edit';
 import ConfirmationDialog from "../confirmation-dialog/ConfirmationDialog"
+import { MY_TASKS_QUERY } from "../../utils/GraphqlQueries";
+import { useQuery } from "@apollo/client";
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -128,9 +130,14 @@ function MyTasks (){
     const [orderBy, setOrderBy] = React.useState('title');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    let tasks = JSON.parse(localStorage.getItem(TASKS));
-    const [rows, setRows] = React.useState(tasks ? tasks : []);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);    
+    const [rows, setRows] = React.useState([]);
+
+    const { loading, data } = useQuery(MY_TASKS_QUERY, {variables: {email: 'arshad3fs@gmail.com'}});
+
+    useEffect( () => {      
+      setRows(data ? data.getMyTasks : []);
+    }, [ data ]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -216,6 +223,7 @@ function MyTasks (){
     return (
         <div className={classes.container}>
                 <Header></Header>
+                { loading ? <div> loading...</div> : "" }
                 {showConfirmation ? 
                     <ConfirmationDialog header={'Confirmation'} 
                                         contentText={'Selected tasks will be deleted. Are you sure you want to proceed?'} 

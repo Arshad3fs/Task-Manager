@@ -2,6 +2,7 @@ type Query {
   getUserDetails(email: String!): User
   signInUser(email: String!, password: String!): Boolean
   getTaskDetails(title: String!): [Task]
+  getMyTasks(email: String!): [Task]
 }
 
 type Mutation {

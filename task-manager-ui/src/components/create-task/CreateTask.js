@@ -7,7 +7,9 @@ import { Checkbox, createStyles, FormControl, FormControlLabel, FormGroup, Input
 import DateFnsUtils from '@date-io/date-fns';
 import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import clsx from 'clsx';
-import { TASKS, TASK_CATEGORY, TASK_STATUS } from '../../utils/AppConstants';
+import { TASK_CATEGORY, TASK_STATUS } from '../../utils/AppConstants';
+import { useMutation } from '@apollo/client';
+import { CREATE_TASK, MY_TASKS_QUERY, UPDATE_TASK } from '../../utils/GraphqlQueries';
 
 const Transition = React.forwardRef(function Transition( props, ref ) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -67,6 +69,7 @@ export default function CreateTask(props) {
   const classes = useStyles();
   const { taskToEdit } = props;
   const [formData, setFormData] = React.useState({
+    id: taskToEdit ? taskToEdit.id : "",
     title: taskToEdit ? taskToEdit.title : "",
     category: taskToEdit ? taskToEdit.category : "",
     desc: taskToEdit ? taskToEdit.desc : "",
@@ -77,6 +80,14 @@ export default function CreateTask(props) {
     targetTime: taskToEdit ? taskToEdit.targetTime : null,
     isOngoingTask: false
   });
+  const [createTask, {called, loading}]= useMutation(CREATE_TASK);
+  const [updateTask, { called: updateCalled, loading: updateLoading}]= useMutation(UPDATE_TASK);
+
+  if( (called && !loading) || (updateCalled && !updateLoading)){
+
+    props.setShowDialog(false);
+  }
+    
 
   const reset = () => {
     setFormData({
@@ -101,20 +112,24 @@ export default function CreateTask(props) {
     return newTask;
   }
 
-  const createNewTask = () => {
-    let tasks = JSON.parse(localStorage.getItem(TASKS));
-    tasks = tasks ? tasks : [];
+  const createNewTask = () => {    
+    const newTask = formatFormDate();    
+    newTask['startDateTime'] = newTask['startDateStr'];
+    newTask['endDateTime'] = newTask['targetDateStr'];
     
-    const newTask = formatFormDate();
-    
-    if( taskToEdit ) {
-      const indexOfTask = tasks.findIndex(task => task.title === taskToEdit.title );
-      tasks[indexOfTask] = newTask;
-    } else {
-      tasks.push(newTask);
-    }      
-    localStorage.setItem(TASKS, JSON.stringify(tasks));
-    props.setShowDialog(false);
+    if( taskToEdit ) {      
+      updateTask({variables: newTask, // Then re-run 
+        refetchQueries: [
+          { query: MY_TASKS_QUERY, variables: {email: 'arshad3fs@gmail.com'} }
+        ]});
+    } else {      
+      newTask['email'] = 'arshad3fs@gmail.com'; // To be updated
+      delete newTask['id'];
+      createTask({variables: newTask, // Then re-run 
+        refetchQueries: [
+          { query: MY_TASKS_QUERY, variables: {email: 'arshad3fs@gmail.com'} }
+        ]});
+    }    
   }
 
   const handleChange = (event, property) => {
@@ -288,4 +303,3 @@ export default function CreateTask(props) {
     </div>
   );
 }
-

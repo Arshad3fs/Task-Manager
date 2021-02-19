@@ -1,6 +1,6 @@
 import { executeQuery } from '../db-client/client.js'
 import { INSERT_USER, SELECT_USER_BY_EMAIL, SELECT_USER_ID_BY_EMAIL_AND_PASSWORD, SELECT_USER_ID_BY_EMAIL, INSERT_TASK, SELECT_TASK_BY_TITLE, DELETE_TASK_BY_ID, UPDATE_TASK, SELECT_TASKS_BY_USER_ID } from '../utils/constants/Queries.js';
-import { formatParams, isValidTask } from '../utils/task/utils.js';
+import { formatParams, isValidTask, isValidUpdateTask } from '../utils/task/utils.js';
 
 export default {
   Query: {
@@ -51,7 +51,7 @@ export default {
     }).catch(e => console.log(e))
      return isSignInSuccessfull; 
   },
-  getMyTasks: async (parent, args) => {    
+  getMyTasks: async (parent, args) => {
     const response = [];
     if( !args.email ){
       return response;
@@ -60,12 +60,13 @@ export default {
     await executeQuery(SELECT_TASKS_BY_USER_ID, [userId]).then( r => {
       if( r.rowCount > 0){
         r.rows.forEach( row => {
+          console.log(row);
           response.push({
             id: row.taskid,
             title: row.title,
             category: row.category,
-            startDateTime: row.startdatetime,
-            endDateTime: row.enddatetime,          
+            startDateTime: row.startdate ? new Date(row.startdate).toDateString() : "",
+            endDateTime: new Date(row.enddate).toDateString(),          
             desc: row.description,
             status: row.status
           });

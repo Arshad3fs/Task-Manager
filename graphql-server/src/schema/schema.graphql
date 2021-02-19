@@ -33,7 +33,7 @@ type Task {
   category: String!  
   startDateTime: String, 
   endDateTime: String!
-  email: String!
+  email: String
   desc: String
   status: String!
 }
@@ -53,8 +53,7 @@ input TaskUpdateInput {
   title: String!
   category: String!  
   startDateTime: String, 
-  endDateTime: String!
-  email: String!
+  endDateTime: String!  
   desc: String
   status: String!
 }

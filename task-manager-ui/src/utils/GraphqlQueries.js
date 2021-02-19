@@ -15,6 +15,22 @@ export const SIGNUP_MUTATION = gql(`
   }
 `);
 
+export const CREATE_TASK = gql(`
+  mutation CreateTask($title: String!, $category: String!, $startDateTime: String, $endDateTime: String!, $email: String!, $desc: String, $status: String!){
+    createTask(task: {title: $title, category: $category, startDateTime: $startDateTime, endDateTime: $endDateTime, email: $email, desc: $desc, status: $status}){
+      status
+    }
+  }`
+);
+
+export const UPDATE_TASK = gql(`
+  mutation UpdateTask($id: String!, $title: String!, $category: String!, $startDateTime: String, $endDateTime: String!, $desc: String, $status: String!){
+    updateTask(task: {id: $id, title: $title, category: $category, startDateTime: $startDateTime, endDateTime: $endDateTime, desc: $desc, status: $status}){
+      status
+    }
+  }`
+);
+
 export const MY_TASKS_QUERY = gql(`
   query GetMyTasks($email: String!){
     getMyTasks(email: $email){

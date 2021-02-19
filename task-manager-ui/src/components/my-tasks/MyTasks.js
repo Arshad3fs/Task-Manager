@@ -189,8 +189,8 @@ function MyTasks (){
 
     const handleCreateNewTask = () => {
         setShowDialog(!showDialog);
-        let tasks = JSON.parse(localStorage.getItem(TASKS));
-        setRows(tasks ? tasks : []);
+        // let tasks = JSON.parse(localStorage.getItem(TASKS));
+        // setRows(tasks ? tasks : []);
         setTaskToEdit(null);
     }
 
@@ -295,9 +295,9 @@ function MyTasks (){
                           <TableCell align="left">{row.category}</TableCell>
                           <TableCell align="left">{row.status}</TableCell>
                           <TableCell align="left">{row.desc}</TableCell>
-                          <TableCell align="left">{row.startDateStr}</TableCell>
+                          <TableCell align="left">{row.startDateTime}</TableCell>
                           <TableCell align="left">{row.startTimeStr}</TableCell>
-                          <TableCell align="left">{row.targetDateStr}</TableCell>
+                          <TableCell align="left">{row.endDateTime}</TableCell>
                           <TableCell align="left">{row.targetTimeStr}</TableCell>
                         </TableRow>
                       );

@@ -45,3 +45,11 @@ export const MY_TASKS_QUERY = gql(`
     }
   }
 `);
+
+export const DELETE_TASK = gql(`
+  mutation DeleteTask($taskId: String!){
+    deleteTask(id: $taskId){
+      status
+    }
+  }
+`)

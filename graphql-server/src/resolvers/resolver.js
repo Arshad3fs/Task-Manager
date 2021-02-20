@@ -59,8 +59,7 @@ export default {
     const userId = await getUserId(args.email)
     await executeQuery(SELECT_TASKS_BY_USER_ID, [userId]).then( r => {
       if( r.rowCount > 0){
-        r.rows.forEach( row => {
-          console.log(row);
+        r.rows.forEach( row => {          
           response.push({
             id: row.taskid,
             title: row.title,

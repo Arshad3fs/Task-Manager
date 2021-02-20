@@ -16,8 +16,9 @@ import EnhancedTableHead from "../common/EnhancedTableHead";
 import clsx from "clsx";
 import EditIcon from '@material-ui/icons/Edit';
 import ConfirmationDialog from "../confirmation-dialog/ConfirmationDialog"
-import { MY_TASKS_QUERY } from "../../utils/GraphqlQueries";
-import { useQuery } from "@apollo/client";
+import { DELETE_TASK, MY_TASKS_QUERY } from "../../utils/GraphqlQueries";
+import { useMutation, useQuery } from "@apollo/client";
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -110,14 +111,15 @@ function descendingComparator(a, b, orderBy) {
 
   const headCells = [
     { id: 'edit', numeric: false, label: 'Edit' },
+    { id: 'delete', numeric: false, label: 'Delete' },
     { id: 'title', numeric: false, label: 'Title' },
     { id: 'category', numeric: false, label: 'Category' },
     { id: 'status', numeric: false, label: 'Status' },
     { id: 'desc', numeric: false, label: "Desc" },
     { id: 'Start Date', numeric: false, label: 'Start Date' },
-    { id: 'Start Time', numeric: false, label: 'Start Time' },
+    // { id: 'Start Time', numeric: false, label: 'Start Time' },
     { id: 'End Date', numeric: false, label: 'End/Target Date' },
-    { id: 'End Time', numeric: false, label: 'End/Target Time' },
+    // { id: 'End Time', numeric: false, label: 'End/Target Time' },
   ];
 
 function MyTasks (){
@@ -134,6 +136,7 @@ function MyTasks (){
     const [rows, setRows] = React.useState([]);
 
     const { loading, data } = useQuery(MY_TASKS_QUERY, {variables: {email: 'arshad3fs@gmail.com'}});
+    const [deleteTask] = useMutation(DELETE_TASK);
 
     useEffect( () => {      
       setRows(data ? data.getMyTasks : []);
@@ -147,19 +150,19 @@ function MyTasks (){
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.title);
+      const newSelecteds = rows.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, title) => {
-    const selectedIndex = selected.indexOf(title);
+  const handleClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, title);
+      newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -183,26 +186,24 @@ function MyTasks (){
     setPage(0);
   };
 
-  const isSelected = (title) => selected.indexOf(title) !== -1;
+  const isSelected = (id) => selected.indexOf(id) !== -1;
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
     const handleCreateNewTask = () => {
-        setShowDialog(!showDialog);
-        // let tasks = JSON.parse(localStorage.getItem(TASKS));
-        // setRows(tasks ? tasks : []);
+        setShowDialog(!showDialog);        
         setTaskToEdit(null);
     }
 
     const handleConfirmation = ()=> setShowConfirmation(!showConfirmation);
 
-    const deleteSelected = () => {
-      let tasks = JSON.parse(localStorage.getItem(TASKS));
-      tasks = tasks ? tasks : [];
-      tasks = tasks.filter (task => !selected.includes(task.title));      
-      localStorage.setItem(TASKS, JSON.stringify(tasks));
-      setRows(tasks);
-      setShowConfirmation(!showConfirmation);
+    const deleteSelected = (taskId) => {
+          taskId = typeof taskId === "string" ? taskId : selected[0];
+          deleteTask({variables: {taskId: taskId},
+            refetchQueries: [
+              { query: MY_TASKS_QUERY, variables: {email: 'arshad3fs@gmail.com'} }
+            ]});      
+      setShowConfirmation(false);
     }
 
     const filterTasks = (event) => {
@@ -215,9 +216,9 @@ function MyTasks (){
       setRows(tasks);
     }
 
-    const editTask = (title) => {
+    const editTask = (id) => {
       setShowDialog(!showDialog);
-      setTaskToEdit(rows.find(row => row.title === title));
+      setTaskToEdit(rows.find(row => row.id === id));
     }
     
     return (
@@ -265,7 +266,7 @@ function MyTasks (){
                   {stableSort(rows, getComparator(order, orderBy))
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row, index) => {
-                      const isItemSelected = isSelected(row.title);
+                      const isItemSelected = isSelected(row.id);
                       const labelId = `enhanced-table-checkbox-${index}`;
 
                       return (
@@ -274,7 +275,7 @@ function MyTasks (){
                           role="checkbox"
                           aria-checked={isItemSelected}
                           tabIndex={-1}
-                          key={row.title}
+                          key={row.id}
                           selected={isItemSelected}
                           classes={{selected: classes.highlightRow}}
                         >
@@ -282,23 +283,26 @@ function MyTasks (){
                             <Checkbox
                               checked={isItemSelected}
                               color={"primary"}
-                              onChange={(event) => handleClick(event, row.title)}
+                              onChange={(event) => handleClick(event, row.id)}
                               inputProps={{ 'aria-labelledby': labelId }}
                             />
                           </TableCell>
                           <TableCell align="left">
-                            <EditIcon style={{cursor: "pointer"}} onClick={()=>editTask(row.title)}></EditIcon>
+                            <EditIcon style={{cursor: "pointer"}} onClick={()=>editTask(row.id)}></EditIcon>
                           </TableCell>
-                          <TableCell component="th" id={labelId} scope="row" padding="none">
+                          <TableCell align="left">
+                            <DeleteIcon style={{color: 'red', cursor: "pointer"}} onClick={()=>deleteSelected(row.id)}></DeleteIcon>
+                          </TableCell>
+                          <TableCell component="th" id={labelId} scope="row" align="left">
                             {row.title}
                           </TableCell>
                           <TableCell align="left">{row.category}</TableCell>
                           <TableCell align="left">{row.status}</TableCell>
                           <TableCell align="left">{row.desc}</TableCell>
                           <TableCell align="left">{row.startDateTime}</TableCell>
-                          <TableCell align="left">{row.startTimeStr}</TableCell>
+                          {/* <TableCell align="left">{row.startTimeStr}</TableCell> */}
                           <TableCell align="left">{row.endDateTime}</TableCell>
-                          <TableCell align="left">{row.targetTimeStr}</TableCell>
+                          {/* <TableCell align="left">{row.targetTimeStr}</TableCell> */}
                         </TableRow>
                       );
                     })}

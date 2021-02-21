@@ -134,11 +134,13 @@ function MyTasks (){
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);    
     const [rows, setRows] = React.useState([]);
+    const [tasks, setTasks] = React.useState([]);
 
     const { loading, data } = useQuery(MY_TASKS_QUERY, {variables: {email: 'arshad3fs@gmail.com'}});
-    const [deleteTask] = useMutation(DELETE_TASK);
+    const [deleteTask] = useMutation(DELETE_TASK);    
 
-    useEffect( () => {      
+    useEffect( () => {     
+      setTasks(data ? data.getMyTasks : []);
       setRows(data ? data.getMyTasks : []);
     }, [ data ]);
 
@@ -206,14 +208,12 @@ function MyTasks (){
       setShowConfirmation(false);
     }
 
-    const filterTasks = (event) => {
-      let tasks = JSON.parse(localStorage.getItem(TASKS));
-      tasks = tasks ? tasks : [];
+    const filterTasks = (event) => {      
       const filterText = event.target.value.toUpperCase();
-      tasks = tasks.filter (task => {
+      const filteredtasks = tasks.filter (task => {
         return task.title.toUpperCase().includes(filterText);
       });      
-      setRows(tasks);
+      setRows(filteredtasks);
     }
 
     const editTask = (id) => {
